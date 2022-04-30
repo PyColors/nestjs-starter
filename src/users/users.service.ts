@@ -12,7 +12,7 @@ export class UsersService {
   ) {}
 
   async getByEmail(email: string) {
-    const user = await this.usersRepository.findOne({ email });
+    const user = await this.usersRepository.findOne({ where: { email } });
     if (user) {
       return user;
     }
@@ -20,7 +20,7 @@ export class UsersService {
   }
 
   async getById(id: number) {
-    const user = await this.usersRepository.findOne({ id });
+    const user = await this.usersRepository.findOne({ where: { id } });
     if (user) {
       return user;
     }

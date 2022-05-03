@@ -9,9 +9,9 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor, Post,
 } from '@nestjs/common';
-import CategoriesService from './categories.service';
-import CreateCategoryDto from './dto/create-category.dto';
-import UpdateCategoryDto from './dto/update-category.dto';
+import { CategoriesService } from './categories.service';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 import JwtAuthenticationGuard from '../authentication/jwt-authentication.guard';
 import FindOneParams from '../utils/findOneParams';
 

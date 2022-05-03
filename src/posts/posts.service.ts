@@ -1,10 +1,11 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import CreatePostDto from './dto/createPost.dto';
 import Post from './post.entity';
 import UpdatePostDto from './dto/updatePost.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import PostNotFoundException from './exception/postNotFund.exception';
+import User from '../users/user.entity';
 
 @Injectable()
 export default class PostsService {
@@ -14,26 +15,29 @@ export default class PostsService {
   ) {}
 
   getAllPosts() {
-    return this.postsRepository.find();
+    return this.postsRepository.find({ relations: ['author'] });
   }
 
   async getPostById(id: number) {
-    const post = await this.postsRepository.findOne({ where: { id } });
+    const post = await this.postsRepository.findOne({ where: { id }, relations: ['author'] });
     if (post) {
       return post;
     }
     throw new PostNotFoundException(id);
   }
 
-  async createPost(post: CreatePostDto) {
-    const newPost = await this.postsRepository.create(post);
+  async createPost(post: CreatePostDto, user: User) {
+    const newPost = await this.postsRepository.create({
+      ...post,
+      author: user
+    });
     await this.postsRepository.save(newPost);
     return newPost;
   }
 
   async updatePost(id: number, post: UpdatePostDto) {
     await this.postsRepository.update(id, post);
-    const updatedPost = await this.postsRepository.findOne({ where: { id } });
+    const updatedPost = await this.postsRepository.findOne({ where: { id }, relations: ['author'] });
     if (updatedPost) {
       return updatedPost
     }
@@ -43,7 +47,7 @@ export default class PostsService {
   async deletePost(id: number) {
     const deleteResponse = await this.postsRepository.delete(id);
     if (!deleteResponse.affected) {
-      throw new PostNotFoundException(id);;
+      throw new PostNotFoundException(id);
     }
   }
 }
